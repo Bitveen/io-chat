@@ -1,16 +1,61 @@
+@charset "UTF-8";
 html, body {
   font-family: 'Open Sans', sans-serif;
   padding: 0;
   margin: 0;
-  height: 100%;
-  width: 100%; }
+  color: #444; }
 
 .container {
   position: relative;
-  min-width: 100%;
-  min-height: 100%;
   padding-top: 30px; }
 
+/* Сама область чата */
 .chat {
+  display: none;
   width: 600px;
   margin: 0 auto; }
+  .chat__header {
+    background-color: #57799e;
+    padding: 0 15px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px; }
+  .chat__title {
+    margin: 0;
+    color: #fff;
+    line-height: 50px; }
+  .chat__body {
+    min-height: 400px;
+    max-height: 400px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 15px; }
+  .chat__form {
+    background-color: #f1f1f1;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid #ddd;
+    padding: 15px; }
+
+/* Форма для отправки сообщений */
+.form__input {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 10px 5px;
+  width: 400px;
+  outline: none; }
+
+.form__button {
+  border: 1px solid #57799e;
+  background-color: #57799e;
+  padding: 10px;
+  border-radius: 3px;
+  color: #fff; }
+
+.auth {
+  width: 600px;
+  margin: 100px auto;
+  border: 1px solid #ddd;
+  padding: 15px;
+  box-sizing: border-box; }
+  .auth__title {
+    margin: 0 0 15px 0; }

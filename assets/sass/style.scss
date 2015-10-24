@@ -1,20 +1,88 @@
-$link-color: #57799E;
+$link-color: #57799e;
+$chat-header-color: #57799e;
+$chat-header-text-color: #fff;
+$chat-border-color: #ddd;
+$chat-form-color: #f1f1f1;
+
+$chat-text-color: #444;
+$button-color: #fff;
 
 html, body {
   font-family: 'Open Sans', sans-serif;
   padding: 0;
   margin: 0;
-  height: 100%;
-  width: 100%;
+  color: $chat-text-color;
 }
 
 .container {
   position: relative;
-  min-width: 100%;
-  min-height: 100%;
   padding-top: 30px;
 }
+
+/* Сама область чата */
 .chat {
+  display: none;
   width: 600px;
   margin: 0 auto;
+  &__header {
+    background-color: $chat-header-color;
+    padding: 0 15px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  }
+
+  &__title {
+    margin: 0;
+    color: $chat-header-text-color;
+    line-height: 50px;
+  }
+
+  &__body {
+    min-height: 400px;
+    max-height: 400px;
+    border-left: 1px solid $chat-border-color;
+    border-right: 1px solid $chat-border-color;
+    padding: 15px;
+  }
+
+  &__form {
+    background-color: $chat-form-color;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid $chat-border-color;
+    padding: 15px;
+  }
+
+
+
+}
+
+/* Форма для отправки сообщений */
+.form {
+  &__input {
+    border: 1px solid $chat-border-color;
+    border-radius: 3px;
+    padding: 10px 5px;
+    width: 400px;
+    outline: none;
+  }
+  &__button {
+    border: 1px solid $link-color;
+    background-color: $link-color;
+    padding: 10px;
+    border-radius: 3px;
+    color: $button-color;
+  }
+}
+
+.auth {
+  width: 600px;
+  margin: 100px auto;
+  border: 1px solid $chat-border-color;
+  padding: 15px;
+  box-sizing: border-box;
+  &__title {
+    margin: 0 0 15px 0;
+
+  }
 }

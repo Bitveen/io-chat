@@ -10,12 +10,38 @@
 <body>
 
     <div class="container">
+
+        <div class="auth">
+            <h3 class="auth__title">Вход в чат</h3>
+            <form class="form" id="formAuth">
+                <input type="text" name="login" id="loginInput" placeholder="Введите Ваш логин" class="form__input">
+                <button type="submit" class="form__button">Войти</button>
+            </form>
+        </div>
+
         <div class="chat">
-            chat
+            <div class="chat__header">
+                <h3 class="chat__title">Simple WebSocket Chat</h3>
+            </div>
+            <div class="chat__body">
+
+            </div>
+            <div class="chat__form">
+                <form id="chatForm" class="form">
+                    <input type="text"
+                           name="message"
+                           autocomplete="off"
+                           id="messageInput"
+                           class="form__input"
+                           title="Введите сообщение..."
+                           placeholder="Введите сообщение...">
+                    <button type="submit" class="form__button">Отправить</button>
+                </form>
+            </div>
         </div>
     </div>
 
-
-<script src="js/chat.js"></script>
+    <script src="js/logger.js"></script>
+    <script src="js/chat.js"></script>
 </body>
 </html>
