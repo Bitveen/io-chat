@@ -1,0 +1,20 @@
+$link-color: #57799E;
+
+html, body {
+  font-family: 'Open Sans', sans-serif;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+  padding-top: 30px;
+}
+.chat {
+  width: 600px;
+  margin: 0 auto;
+}
