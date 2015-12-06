@@ -7,12 +7,25 @@ $chat-form-color: #f1f1f1;
 $chat-text-color: #444;
 $button-color: #fff;
 
+$chat-users-color: #fff;
+
+
 html, body {
   font-family: 'Open Sans', sans-serif;
   padding: 0;
   margin: 0;
   color: $chat-text-color;
 }
+
+
+@mixin clearfix() {
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
 
 .container {
   position: relative;
@@ -24,17 +37,21 @@ html, body {
   display: none;
   width: 600px;
   margin: 0 auto;
+  position: relative;
+
   &__header {
     background-color: $chat-header-color;
     padding: 0 15px;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    @include clearfix();
   }
 
   &__title {
     margin: 0;
     color: $chat-header-text-color;
     line-height: 50px;
+    float: left;
   }
 
   &__body {
@@ -53,7 +70,63 @@ html, body {
     padding: 15px;
   }
 
+  &__users {
+    position: absolute;
+    width: 300px;
+    min-height: 100px;
+    right: 0;
+    background-color: $chat-users-color;
+    border: 1px solid $chat-border-color;
+    box-shadow: 1px 2px 5px $chat-border-color;
+    box-sizing: border-box;
+    padding: 10px;
+    display: none;
+    &:before {
+      border: 10px solid transparent;
+      border-bottom: 10px solid $chat-users-color;
+      content: '';
+      display: block;
+      position: absolute;
+      top: -20px;
+      right: 12px;
+    }
 
+    &_active {
+      display: block;
+    }
+
+  }
+
+  &__users-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: normal;
+    border-bottom: 1px solid $chat-border-color;
+    padding-bottom: 5px;
+  }
+
+  &__users-count {
+    font-weight: bold;
+  }
+
+  &__users-user {
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+  &__users-login {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+
+  &__link {
+    color: $chat-header-text-color;
+    float: right;
+    line-height: 50px;
+    &:hover {
+      color: darken($chat-header-text-color, 10%);
+    }
+  }
 
 }
 
@@ -65,6 +138,7 @@ html, body {
     padding: 10px 5px;
     width: 400px;
     outline: none;
+    font-size: 12px;
   }
   &__button {
     border: 1px solid $link-color;
@@ -72,6 +146,9 @@ html, body {
     padding: 10px;
     border-radius: 3px;
     color: $button-color;
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 

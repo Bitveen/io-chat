@@ -13,16 +13,22 @@ html, body {
 .chat {
   display: none;
   width: 600px;
-  margin: 0 auto; }
+  margin: 0 auto;
+  position: relative; }
   .chat__header {
     background-color: #57799e;
     padding: 0 15px;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px; }
+    .chat__header:after {
+      content: '';
+      display: block;
+      clear: both; }
   .chat__title {
     margin: 0;
     color: #fff;
-    line-height: 50px; }
+    line-height: 50px;
+    float: left; }
   .chat__body {
     min-height: 400px;
     max-height: 400px;
@@ -35,6 +41,47 @@ html, body {
     border-bottom-right-radius: 3px;
     border: 1px solid #ddd;
     padding: 15px; }
+  .chat__users {
+    position: absolute;
+    width: 300px;
+    min-height: 100px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 1px 2px 5px #ddd;
+    box-sizing: border-box;
+    padding: 10px;
+    display: none; }
+    .chat__users:before {
+      border: 10px solid transparent;
+      border-bottom: 10px solid #fff;
+      content: '';
+      display: block;
+      position: absolute;
+      top: -20px;
+      right: 12px; }
+    .chat__users_active {
+      display: block; }
+  .chat__users-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: normal;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px; }
+  .chat__users-count {
+    font-weight: bold; }
+  .chat__users-user {
+    margin-bottom: 10px;
+    margin-top: 10px; }
+  .chat__users-login {
+    font-size: 12px;
+    font-weight: bold; }
+  .chat__link {
+    color: #fff;
+    float: right;
+    line-height: 50px; }
+    .chat__link:hover {
+      color: #e6e6e6; }
 
 /* Форма для отправки сообщений */
 .form__input {
@@ -42,7 +89,8 @@ html, body {
   border-radius: 3px;
   padding: 10px 5px;
   width: 400px;
-  outline: none; }
+  outline: none;
+  font-size: 12px; }
 
 .form__button {
   border: 1px solid #57799e;
@@ -50,6 +98,8 @@ html, body {
   padding: 10px;
   border-radius: 3px;
   color: #fff; }
+  .form__button:hover {
+    cursor: pointer; }
 
 .auth {
   width: 600px;
