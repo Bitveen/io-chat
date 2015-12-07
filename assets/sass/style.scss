@@ -14,7 +14,10 @@ html, body {
   font-family: 'Open Sans', sans-serif;
   padding: 0;
   margin: 0;
+  width: 100%;
+  height: 100%;
   color: $chat-text-color;
+  background-color: #fcfcfc;
 }
 
 
@@ -26,17 +29,17 @@ html, body {
   }
 }
 
-
 .container {
   position: relative;
-  padding-top: 30px;
+  height: 100%;
 }
 
 /* Сама область чата */
 .chat {
-  display: none;
   width: 600px;
   margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
   position: relative;
 
   &__header {
@@ -73,7 +76,6 @@ html, body {
   &__users {
     position: absolute;
     width: 300px;
-    min-height: 100px;
     right: 0;
     background-color: $chat-users-color;
     border: 1px solid $chat-border-color;
@@ -132,18 +134,24 @@ html, body {
 
 /* Форма для отправки сообщений */
 .form {
+  &__row {
+    margin-bottom: 10px;
+  }
+
   &__input {
     border: 1px solid $chat-border-color;
     border-radius: 3px;
     padding: 10px 5px;
-    width: 400px;
+    width: 100%;
+    box-sizing: border-box;
     outline: none;
     font-size: 12px;
   }
   &__button {
     border: 1px solid $link-color;
     background-color: $link-color;
-    padding: 10px;
+    padding: 5px 10px;
+    font-weight: bold;
     border-radius: 3px;
     color: $button-color;
     &:hover {
@@ -153,13 +161,32 @@ html, body {
 }
 
 .auth {
-  width: 600px;
-  margin: 100px auto;
+  background-color: #fff;
+  position: relative;
+  top: 50%;
+  width: 400px;
+  margin: 0 auto;
   border: 1px solid $chat-border-color;
   padding: 15px;
   box-sizing: border-box;
+  border-radius: 3px;
+  transform: translateY(-50%);
   &__title {
     margin: 0 0 15px 0;
-
+  }
+}
+.message {
+  padding: 10px 0;
+  &__from {
+    color: #666;
+    font-size: 12px;
+  }
+  &__user {
+    font-size: 13px;
+    font-weight: bold;
+    margin-right: 15px;
+  }
+  &__text {
+    font-size: 14px;
   }
 }

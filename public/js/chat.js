@@ -1,131 +1,182 @@
-(function(Logger) {
+(function() {
+    "use strict";
 
-    var chatForm = document.getElementById('chatForm');
-    var messageInput = document.getElementById('messageInput');
-    var chat = document.querySelector('.chat');
-    var auth = document.querySelector('.auth');
-    var onlineUsersButton = chat.querySelector('.chat__link_users');
-    var chatUsers = document.querySelector('.chat__users');
+    var container = document.querySelector('.container');
 
+    var authTemplate = document.getElementById('auth-template').innerHTML;
+    var chatTemplate = document.getElementById('chat-template').innerHTML;
 
-
-    function Chat(io, logger) {
-        this.socket = io();
-        this.logger = logger;
+    var authView = Handlebars.compile(authTemplate);
+    var chatView = Handlebars.compile(chatTemplate);
 
 
-        var timer = null;
-
-        var onlineUsers = [];
-
-        /* chat events */
-        this.socket.on('new message', this.handleNewMessage.bind(this));
-        this.socket.on('user leave', this.handleUserLeave.bind(this));
-        this.socket.on('user join', this.handleUserJoin.bind(this));
-        this.socket.on('get login', this.authenticateUser.bind(this));
-        this.socket.on('authenticated', this.init.bind(this));
-        //this.socket.on('get users', this.handleUsers.bind(this), false);
-
-        auth.style.display = "none";
-        chat.style.display = "block";
-
-        chatForm.addEventListener('submit', this.handleFormSubmit.bind(this), false);
+    var socket = io();
 
 
-        // update count label
-        chatUsers.addEventListener('DOMNodeInserted', function() {
-            var chatUsersCount = document.querySelector('.chat__users-count');
-            chatUsersCount.innerHTML = onlineUsers.length;
-        }, false);
+    function Chat() {
+        this.users = [];
+        this.messages = [];
 
 
-        onlineUsersButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            chatUsers.classList.toggle('chat__users_active');
+        this.onlineUsersButton = null;
+        this.chatUsers = null;
+        this.loginForm = null;
+        this.chat = null;
+        this.chatForm = null;
 
-            chatUsers.appendChild(document.createElement('a').appendChild(document.createTextNode('Link')));
+        this.timer = null;
 
-            if (chatUsers.classList.contains('chat__users_active')) {
-                timer = setTimeout(function() {
-                    chatUsers.classList.remove('chat__users_active');
-                }, 3000);
-            } else {
-                clearTimeout(timer);
-            }
-        }, false);
-
-
-        chatUsers.addEventListener('mouseover', function() {
-            clearTimeout(timer);
-        }, false);
-
-        chatUsers.addEventListener('mouseout', function() {
-            timer = setTimeout(function() {
-                chatUsers.classList.remove('chat__users_active');
-            }, 3000);
-        }, false);
-
-
-
-
-
-
-
-
-
-
-
+        socket.on('need authentication', this.authenticate.bind(this));
+        socket.on('init chat', this.init.bind(this));
+        socket.on('user join', this.addUser.bind(this));
+        socket.on('user leave', this.removeUser.bind(this));
+        socket.on('new message', this.writeMessage.bind(this));
     }
 
-
-    Chat.prototype.handleNewMessage = function(data) {
-        this.logger.writeNewMessage(data);
-    };
-
-    Chat.prototype.handleUserLeave = function(login) {
-        this.logger.writeUserLeaveMessage(login);
-    };
-
-    Chat.prototype.handleUserJoin = function(login) {
-        this.logger.writeUserJoinMessage(login);
+    /* Вставка формы аутентификации */
+    Chat.prototype.authenticate = function() {
+        container.innerHTML = authView();
+        this.loginForm = document.getElementById('formAuth');
+        this.loginForm.addEventListener('submit', this.handleLoginForm, false);
     };
 
 
-    Chat.prototype.authenticateUser = function() {
-
-        //auth.style.display = "block";
-        //chat.style.display = "none";
-
-        var loginForm = document.getElementById('formAuth');
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            var loginInput = document.getElementById('loginInput');
-            var login = loginInput.value.trim();
-            if (login) {
-                this.socket.emit('set login', login);
-                loginInput.value = '';
-            }
-        }.bind(this), false);
-    };
-
-    Chat.prototype.handleFormSubmit = function(event) {
+    /* Аутентификация */
+    Chat.prototype.handleLoginForm = function(event) {
         event.preventDefault();
+        var loginInput = document.getElementById('loginInput');
+        var login = loginInput.value.trim();
+        if (login) {
+            socket.emit('new user', login);
+            loginInput.value = '';
+        }
+    };
+
+
+    /* Срабатывает после аутентификации. Открытие самого чата */
+    Chat.prototype.init = function(users, messages) {
+        var self = this;
+
+        self.users = users;
+        self.messages = messages;
+
+        self.loginForm.removeEventListener('submit', self.handleLoginForm, false);
+
+        container.innerHTML = chatView({
+            onlineUsers: self.users,
+            messages: self.messages
+        });
+
+        self.chat = document.querySelector('.chat');
+        self.onlineUsersButton = this.chat.querySelector('.chat__link_users');
+        self.chatUsers = document.querySelector('.chat__users');
+        self.chatForm = document.getElementById('chatForm');
+
+        self.onlineUsersButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            self.chatUsers.classList.toggle('chat__users_active');
+            if (self.chatUsers.classList.contains('chat__users_active')) {
+                self.timer = setTimeout(function() {
+                    self.chatUsers.classList.remove('chat__users_active');
+                }, 1000);
+            } else {
+                clearTimeout(self.timer);
+            }
+        }, false);
+
+
+        self.chatUsers.addEventListener('mouseover', function() {
+            clearTimeout(self.timer);
+        }, false);
+
+        self.chatUsers.addEventListener('mouseout', function() {
+            self.timer = setTimeout(function() {
+                self.chatUsers.classList.remove('chat__users_active');
+            }, 1000);
+        }, false);
+
+
+
+        self.chatUsers.addEventListener('DOMNodeInserted', self.updateUsersCounter.bind(self), false);
+        self.chatUsers.addEventListener('DOMNodeRemoved', self.updateUsersCounter.bind(self), false);
+
+        self.chatForm.addEventListener('submit', self.handleSendMessage.bind(this), false);
+
+    };
+
+
+    Chat.prototype.updateUsersCounter = function() {
+        var chatUsersCount = document.querySelector('.chat__users-count');
+        chatUsersCount.innerHTML = this.users.length;
+    };
+
+
+    Chat.prototype.handleSendMessage = function(event) {
+        event.preventDefault();
+        var messageInput = document.getElementById('messageInput');
         var message = messageInput.value.trim();
         if (message) {
-            this.socket.emit('new message', message);
+            socket.emit('new message', message);
             messageInput.value = '';
         }
     };
 
-    Chat.prototype.init = function(login) {
-        //chat.style.display = "block";
-        //auth.style.display = "none";
-        //this.socket.emit('user join', login);
+
+    /* Вставить новый элемент в список пользователей онлайн*/
+    Chat.prototype.addUser = function(login) {
+        this.users.push({ login: login });
+        var div = document.createElement('div');
+        var span = document.createElement('span');
+
+        div.className = "chat__users-user";
+        div.dataset.login = login;
+        span.className = "chat__users-login";
+        span.appendChild(document.createTextNode(login));
+        div.appendChild(span);
+        this.chatUsers.appendChild(div);
     };
 
 
 
 
+    /* Удалить элемент из списка пользователей */
+    Chat.prototype.removeUser = function(login) {
+        var elements = document.querySelectorAll('.chat__users-user');
+        for (var i = 0; i < elements.length; i++) {
+            if (login == elements[i].dataset.login) {
+                this.users.splice(i, 1);
+                elements[i].parentNode.removeChild(elements[i]);
+                console.log(this.users);
+                break;
+            }
+        }
+    };
 
-    new Chat(io, new Logger());
-})(Logger);
+
+    Chat.prototype.writeMessage = function(message) {
+        this.messages.push(message);
+        var chatBody = document.querySelector('.chat__body');
+        var div = document.createElement('div'),
+            fromSpan = document.createElement('span'),
+            loginSpan = document.createElement('span'),
+            messageSpan = document.createElement('span');
+
+        div.className = "message";
+        fromSpan.className = "message__from";
+        loginSpan.className = "message__user";
+        messageSpan.className = "message__text";
+
+        fromSpan.innerText = "От: ";
+        loginSpan.innerText = message.login;
+        messageSpan.innerText = message.message;
+
+        div.appendChild(fromSpan);
+        div.appendChild(loginSpan);
+        div.appendChild(messageSpan);
+
+        chatBody.appendChild(div);
+    };
+
+
+    new Chat();
+})();

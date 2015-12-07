@@ -6,6 +6,7 @@ var express = require('express'),
 
 
 var messages = [];
+var users = [];
 
 
 /* Static server */
@@ -20,56 +21,46 @@ http.listen(port, function() {
 
 
 
-/* Handle messages */
 io.on('connection', function(socket) {
 
-    socket.emit('get login'); // authorization of new user
+    socket.emit('need authentication');
 
-
-
-    socket.on('set login', function(login) {
+    socket.on('new user', function(login) {
         socket.login = login;
-
-        socket.emit('authenticated', login);
-
-
-        socket.on('new message', function(message) {
-
-            messages.push({
-                message: message,
-                login: socket.login
-            });
-
-            io.emit('new message', {
-                message: message,
-                login: socket.login
-            });
-
-
+        users.push({
+            login: login
         });
-
-        socket.on('user join', function(login) {
-            socket.broadcast.emit('user join', login);
-        });
-
-        socket.on('disconnect', function() {
-            io.emit('user leave', socket.login);
-        });
+        socket.emit('init chat', users, messages);
+        socket.broadcast.emit('user join', login);
+    });
 
 
-        socket.on('get current users', function() {
+    socket.on('new message', function(message) {
+        var newMessage = {
+            message: message,
+            login: socket.login,
+            date: Date.now()
+        };
 
-        });
+        messages.push(newMessage);
+        io.emit('new message', newMessage);
+    });
 
+    //socket.on('user join', function(login) {
+    //    socket.broadcast.emit('user join', login);
+    //});
+
+    socket.on('disconnect', function() {
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].login == socket.login) {
+                users.splice(i, 1);
+                break;
+            }
+        }
+        socket.broadcast.emit('user leave', socket.login);
     });
 
 
 
 
 });
-
-
-
-
-
-
