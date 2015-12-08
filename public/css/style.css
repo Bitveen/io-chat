@@ -124,7 +124,8 @@ html, body {
     margin: 0 0 15px 0; }
 
 .message {
-  padding: 10px 0; }
+  padding: 10px 0;
+  font-size: 14px; }
   .message__from {
     color: #666;
     font-size: 12px; }

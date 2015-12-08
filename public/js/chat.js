@@ -72,13 +72,14 @@
         self.chatUsers = document.querySelector('.chat__users');
         self.chatForm = document.getElementById('chatForm');
 
+
         self.onlineUsersButton.addEventListener('click', function(event) {
             event.preventDefault();
             self.chatUsers.classList.toggle('chat__users_active');
             if (self.chatUsers.classList.contains('chat__users_active')) {
                 self.timer = setTimeout(function() {
                     self.chatUsers.classList.remove('chat__users_active');
-                }, 1000);
+                }, 2000);
             } else {
                 clearTimeout(self.timer);
             }
@@ -92,7 +93,7 @@
         self.chatUsers.addEventListener('mouseout', function() {
             self.timer = setTimeout(function() {
                 self.chatUsers.classList.remove('chat__users_active');
-            }, 1000);
+            }, 2000);
         }, false);
 
 
@@ -104,13 +105,14 @@
 
     };
 
-
+    /* Обновление счетчика пользователей */
     Chat.prototype.updateUsersCounter = function() {
         var chatUsersCount = document.querySelector('.chat__users-count');
         chatUsersCount.innerHTML = this.users.length;
     };
 
 
+    /* Отправка сообщения */
     Chat.prototype.handleSendMessage = function(event) {
         event.preventDefault();
         var messageInput = document.getElementById('messageInput');
@@ -122,12 +124,35 @@
     };
 
 
+
+    /* Логирование подключений/отключений */
+    Chat.prototype.log = function(login, type) {
+        var chatBody = document.querySelector('.chat__body');
+        var messageDiv = document.createElement('div');
+        var message;
+        switch (type) {
+            case 'add':
+                message = "Пользователь <strong>" + login + "</strong> присоединился к чату.";
+                break;
+            case 'remove':
+                message = "Пользователь <strong>" + login + "</strong> покинул чат.";
+                break;
+        }
+
+        messageDiv.className = "message";
+        messageDiv.innerHTML = message;
+
+        chatBody.appendChild(messageDiv);
+    };
+
+
     /* Вставить новый элемент в список пользователей онлайн*/
     Chat.prototype.addUser = function(login) {
+        this.log(login, 'add');
         this.users.push({ login: login });
+
         var div = document.createElement('div');
         var span = document.createElement('span');
-
         div.className = "chat__users-user";
         div.dataset.login = login;
         span.className = "chat__users-login";
@@ -141,12 +166,12 @@
 
     /* Удалить элемент из списка пользователей */
     Chat.prototype.removeUser = function(login) {
+        this.log(login, 'remove');
         var elements = document.querySelectorAll('.chat__users-user');
         for (var i = 0; i < elements.length; i++) {
             if (login == elements[i].dataset.login) {
                 this.users.splice(i, 1);
                 elements[i].parentNode.removeChild(elements[i]);
-                console.log(this.users);
                 break;
             }
         }
